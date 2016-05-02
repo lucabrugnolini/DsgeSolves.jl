@@ -3,6 +3,7 @@
 # Based on Exercises for Practical DSGE Modelling
 
 using Distributions
+using PyPlot
 
 type DSGE
   b::Int64
@@ -52,8 +53,8 @@ end
 function simulating_dsge(m,pstar,Λ,R,rep)
   (Λ1, Λ2, P11, P12, P21, P22, R1, R2) = create_partition(m,pstar,Λ,R)
     for i in 2:rep
-      w[i] = real(inv(P11 - P12*inv(P22)*P21)*Λ1*(P11 - P12*inv(P22)*P21))*w[i-1] + real((P11 - P12*inv(P22)*P21))*rand(m.v)
-      y[i] = -real(inv(P22)*P21)*w[i]
+      w[:,i] = real(inv(P11 - P12*inv(P22)*P21)*Λ1*(P11 - P12*inv(P22)*P21))*w[:,i-1] + real((P11 - P12*inv(P22)*P21))*rand(m.v)
+      y[:,i] = -real(inv(P22)*P21)*w[:,i]'
     end
 return w, y
 end
@@ -92,12 +93,12 @@ w = zeros(m.b,rep)
 y = zeros(m.f,rep)
 
 (A, B, Λ, P, pstar, R) = create_matrices(m)
-  (w, y) = simulating_dsge(m,pstar,Λ,R,rep)
+(w, y) = simulating_dsge(m,pstar,Λ,R,rep)
 
-
-
-
-
+plot(w'); hold(true); plot(y[1,:]'); hold(true); plot(y[2,:]')
+plot(w[:,2:end]',w[:,1:end-1]')
+plot(y[1,2:end]',y[1,1:end-1]')
+plot(y[2,2:end]',y[2,1:end-1]')
 
 
 
