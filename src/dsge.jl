@@ -61,7 +61,14 @@ end
 
 m = DSGE(1,2,1)
 
-# Model
+# Model Example
+# Three variables:
+#                  2 forward-looking -- output gap and inflation
+#                  x(t+1) + σ^(-1)π(t+1) = x(t) + σ^(-1)δπ(t) + σ^(-1)v(t)
+#                  βπ(t+1) = -kx(t) +π(t)
+
+#                  1 predetermined -- interest rate shock
+#                  v(t+1) = ρv(t) + ϵ(t+1)
 β = 0.99
 σ = 1
 χ = 1.55
@@ -71,7 +78,6 @@ m = DSGE(1,2,1)
 α = 3
 δ = 1.5
 ρ = 0.6
-
 κ = (1-ω)*(1-β*ω)/(α*ω)
 
 m.A0[1,1] = 1
@@ -88,121 +94,18 @@ m.A1[3,3] = 1
 
 m.B0[1,1] = 1
 
-rep = 100
+rep = 1000
+burn_in = rep/10
 w = zeros(m.b,rep)
 y = zeros(m.f,rep)
 
 (A, B, Λ, P, pstar, R) = create_matrices(m)
 (w, y) = simulating_dsge(m,pstar,Λ,R,rep)
 
-plot(w'); hold(true); plot(y[1,:]'); hold(true); plot(y[2,:]')
-plot(w[:,2:end]',w[:,1:end-1]')
-plot(y[1,2:end]',y[1,1:end-1]')
-plot(y[2,2:end]',y[2,1:end-1]')
+plot(w'); hold(true); plot(y[1,burn_in:end]'); hold(true); plot(y[2,burn_in:end]')
+plot(w[:,(burn_in+1):end]',w[:,burn_in:end-1]', color = "white")
+plot(y[1,(burn_in+1):end]',y[1,burn_in:end-1]', color = "green")
+plot(y[2,(burn_in+1):end]',y[2,burn_in:end-1]', color = "red")
 
-
-
-
-###############################################################################
-# Drawing from a Gaussian
-using PyPlot
-x = randn(1000,1)
-(n,k) = size(x)
-mean_x = zeros(n,k)
-var_x = zeros(n,k)
-for i in 1:n
-   mean_x[i] = mean(x[1:i,:])
-   var_x[i] = var(x[1:i,:])
-end
-plot(mean_x); hold(true); plot(var_x, color = "red");
-
-# Simulating an AR(1)
-v = 0.1^0.5*randn(n,k)
-y = zeros(n,k)
-ρ = 1
-for i in 2:n
-  y[i,:] = ρ*y[i-1,:] + v[i]
-end
-plot(y)
-
-# Simulating a Markow switching
-prob = 0.05
-A = 0.01
-B = -0.01
-y = zeros(n,k)
-for i in 1:n
-draw = rand(1,1)
-if draw[1,1] > (1-prob)
-  y[i] = B
-else
-  y[i] = A
-end
-end
-plot(y)
-
-# Log-linearisation
-β = 0.99
-σ = 1
-χ = 1.55
-η = 0
-θ = 2.064
-ω = 0.5
-α = 3
-δ = 1.5
-ρ = 0.5
-
-Y_bar = ((θ-1)/χ*θ)^(1/(η+σ))
-κ = (1-ω)*(1-β*ω)/(α*ω)
-
-A0 = zeros(3,3)
-A0[1,1] = 1
-A0[2,2] = 1
-A0[2,3] = 1/σ
-A0[3,3] = β
-
-A1 = zeros(3,3)
-A1[1,1] = ρ
-A1[2,1] = 1/σ
-A1[2,2] = 1
-A1[2,3] = 1/σ*δ
-A1[3,2] = -κ
-A1[3,3] = 1
-
-B0 = zeros(3,1)
-B0[1,1] = 1
-
-A = inv(A0)*A1
-B = inv(A0)*B0
-
-(val,p) = eig(A)
-val = real(val)
-Λ = diagm(val)
-t = sortrows([val p])
-Λ = diagm(t[:,1])
-p = t[:,2:4]
-pstar =& inv(p)
-
-range = -10:0.1:10
-stability = zeros(length(range))
-for i in 1:length(range)
-  δ = range[i]
-  A1[2,3] = 1/σ*δ
-  A = inv(A0)*A1
-  B = inv(A0)*B0
-  (val,p) = eig(A)
-  Λ = diagm(val)
-  t = sortrows([val p])
-  Λ = diagm(t[:,1])
-  Λ = abs(Λ)
- (Λ[1,1] < 1 && Λ[2,2] > 1 && Λ[3,3] > 1) && (stability[i] = 1)
-end
-plot(stability)
-
-
-# FEVD
-beta = 0.99; sigma = 1;     chi = 1.55
-eta = 0;     theta = 2.064; omega = 0.5
-alpha = 3;   delta = 1.5;   rhov = 0.5
-rhou = 0.8;  sigmav = 1;    sigmau = 0.5
-
-kappa=(1-omega)*(1-beta*omega)/(alpha*omega)
+# Computing stylized facts as standard deviation and correlation of series
+std([w]), std([y[1,:]]), std([y[2,:]])
