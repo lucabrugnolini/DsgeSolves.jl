@@ -59,6 +59,17 @@ function simulating_dsge(m,pstar,Λ,R,rep)
 return w, y
 end
 
+function irf_dsge(m,pstar,Λ,R,rep)
+  (Λ1, Λ2, P11, P12, P21, P22, R1, R2) = create_partition(m,pstar,Λ,R)
+  shock = zeros(1,rep)
+  shock[1,2] = 1
+    for i in 2:rep
+      w[:,i] = real(inv(P11 - P12*inv(P22)*P21)*Λ1*(P11 - P12*inv(P22)*P21))*w[:,i-1] + real((P11 - P12*inv(P22)*P21))*shock[:,i]
+      y[:,i] = -real(inv(P22)*P21)*w[:,i]'
+    end
+return w, y
+end
+
 m = DSGE(1,2,1)
 
 # Model Example
@@ -95,17 +106,23 @@ m.A1[3,3] = 1
 m.B0[1,1] = 1
 
 rep = 1000
-burn_in = rep/10
+burn_in = rep/1
 w = zeros(m.b,rep)
 y = zeros(m.f,rep)
 
 (A, B, Λ, P, pstar, R) = create_matrices(m)
 (w, y) = simulating_dsge(m,pstar,Λ,R,rep)
 
-plot(w'); hold(true); plot(y[1,burn_in:end]'); hold(true); plot(y[2,burn_in:end]')
+plot(w'); hold(true); plot(y[1,1:end]'); hold(true); plot(y[2,1:end]')
 plot(w[:,(burn_in+1):end]',w[:,burn_in:end-1]', color = "white")
 plot(y[1,(burn_in+1):end]',y[1,burn_in:end-1]', color = "green")
 plot(y[2,(burn_in+1):end]',y[2,burn_in:end-1]', color = "red")
 
 # Computing stylized facts as standard deviation and correlation of series
 std([w]), std([y[1,:]]), std([y[2,:]])
+
+# Impulse response functions
+(irf_w,irf_y) = irf_dsge(m,pstar,Λ,R,rep)
+plot(irf_w[:,1:20]'); hold(true); plot(irf_y[1,1:20]'); hold(true); plot(irf_y[2,1:20]')
+
+#FEVD -- need to add a shock oth it makes no sense!
