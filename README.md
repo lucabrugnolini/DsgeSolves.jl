@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # DsgeSolves.jl
 Solution methods for simple DSGE models in Julia
 
@@ -137,9 +136,3 @@ mean(w,2), mean(y,2)
 std(w,2), std(y,2)
 
 ```
-
-
-=======
-# DSGE.jl
-DSGE models in Julia
->>>>>>> 2592b83f395aa826c3f4dd0ef5404e6183b3fae8
