@@ -3,10 +3,10 @@
 # Declaring parameter and model descriptives
 # Call functions to solve the model
 #IMPORTANT: The model needs ONE steady state parameter for each variable
-
+using DsgeSolves
 # Set Seed 
 srand(1234) 
-include(joinpath(Pkg.dir("DsgeSolves"),"src","projection_methods.jl"))
+include(joinpath(Pkg.dir("DsgeSolves"),"src","projection_method.jl"))
 
 # Define the exogenous variables and the calibrated parameters
 const Rstar = 0.01
