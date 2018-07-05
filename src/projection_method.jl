@@ -3,7 +3,8 @@
 ## Based on Computationa Macroeconomics for the open economy
 ## Lim and McNelis 2008
 ## Chapter 2: Flexible Price Model
-using Parameters, Distributions, using Optim, using Plots; plotly()
+using Parameters, Distributions, Optim, Plots
+plotly()
 
 type Parameter
     Θ_s::Array
