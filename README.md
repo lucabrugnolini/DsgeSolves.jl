@@ -16,8 +16,9 @@ This package is a work for solving locally and globally simple DSGE models
     - [ ] Forecast error variance decomposition (FEVD)
 - [x] Non-linear DSGE
   - [x] Projection methods ---> NOT GENERAL YET
-    - [x] Impulse response functions (IRFs)
-    - [x] Simulating data from the model
+    - [x] Neural network 
+      - [x] Impulse response functions (IRFs)
+      - [x] Simulating data from the model
   
 ## Example
 ```julia

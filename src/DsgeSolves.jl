@@ -1,6 +1,7 @@
-# Luca Brugnolini
-# 20 April 2016
-# Based on Exercises for Practical DSGE Modelling
+## First order perturbation approach
+## Local solution for log-linear model around a non-stochastic steady state
+## Blanchard and Kahn (1980)
+## Based on Exercises for Practical DSGE Modelling
 module DsgeSolves
 using Distributions
 
@@ -94,7 +95,7 @@ function fevd(m,pstar,Λ,R,rep) ##restart from this function using a for loop
 
 return irf_w, irf_y
 end
-
+s
 export DSGE, create_matrices, simulating_dsge, irf_dsge
 
 end # end module
